@@ -1,0 +1,39 @@
+{
+  "pages": [
+    {
+      "path": "pages/index",
+      "type": "home"
+    },
+    {
+      "path": "pages/hi",
+      "type": "page"
+    },
+    {
+      "path": "pages/index-mermaid",
+      "type": "page"
+    },
+    {
+      "path": "pages/mermaid-test",
+      "type": "page"
+    },
+    {
+      "path": "pages/migration-example",
+      "type": "page"
+    },
+    {
+      "path": "pages/test-mermaid",
+      "type": "page"
+    }
+  ],
+  "globalStyle": {
+    "backgroundColor": "@bgColor",
+    "backgroundColorBottom": "@bgColorBottom",
+    "backgroundColorTop": "@bgColorTop",
+    "backgroundTextStyle": "@bgTxtStyle",
+    "navigationBarBackgroundColor": "#000000",
+    "navigationBarTextStyle": "@navTxtStyle",
+    "navigationBarTitleText": "Vitesse-Uni",
+    "navigationStyle": "custom"
+  },
+  "subPackages": []
+}
