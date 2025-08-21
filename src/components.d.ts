@@ -11,6 +11,7 @@ declare module 'vue' {
     AppLogos: typeof import('./components/AppLogos.vue')['default']
     HiCounter: typeof import('./components/HiCounter.vue')['default']
     InputEntry: typeof import('./components/InputEntry.vue')['default']
+    MessageText: typeof import('./components/Message/Text.vue')['default']
     MpHtmlMpHtml: typeof import('./components/mp-html/mp-html.vue')['default']
     MpHtmlNodeNode: typeof import('./components/mp-html/node/node.vue')['default']
     ZeroMarkdownViewZeroMarkdownView: typeof import('./components/zero-markdown-view/zero-markdown-view.vue')['default']

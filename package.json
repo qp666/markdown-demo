@@ -56,7 +56,16 @@
     "@dcloudio/uni-mp-weixin": "3.0.0-4040520250104002",
     "@dcloudio/uni-mp-xhs": "3.0.0-4040520250104002",
     "@dcloudio/uni-quickapp-webview": "3.0.0-4040520250104002",
+    "@vscode/markdown-it-katex": "^1.1.1",
     "@vueuse/core": "^12.4.0",
+    "d3": "^7.9.0",
+    "d3-array": "^3.2.4",
+    "d3-contour": "^4.0.2",
+    "highlight.js": "^11.11.1",
+    "katex": "^0.16.21",
+    "markdown-it": "^14.1.0",
+    "markdown-it-link-attributes": "^4.0.1",
+    "mermaid-it-markdown": "^1.0.8",
     "vue": "~3.5.0",
     "vue-i18n": "^9.14.2"
   },
@@ -70,7 +79,6 @@
     "@iconify-json/carbon": "^1.2.5",
     "@mini-types/alipay": "^3.0.14",
     "@types/node": "^22.10.6",
-
     "@uni-helper/uni-env": "^0.1.7",
     "@uni-helper/uni-types": "^1.0.0-alpha.6",
     "@uni-helper/unocss-preset-uni": "^0.2.11",
@@ -79,14 +87,10 @@
     "@uni-helper/vite-plugin-uni-manifest": "^0.2.7",
     "@uni-helper/vite-plugin-uni-pages": "^0.2.28",
     "@uni-helper/volar-service-uni-pages": "^0.2.28",
-
     "@vue/runtime-core": "^3.5.13",
     "@vue/tsconfig": "^0.7.0",
-
-
     "miniprogram-api-typings": "^4.0.4",
     "sass": "^1.89.2",
-
     "typescript": "~5.7.3",
     "unocss": "^65.4.0",
     "unplugin-auto-import": "^19.0.0",

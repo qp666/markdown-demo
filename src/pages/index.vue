@@ -1,6 +1,13 @@
 <script lang="ts" setup>
 import mpHtml from '@/components/mp-html/mp-html'
 
+// 导航到markdown测试页面
+function goToMarkdownTest() {
+  uni.navigateTo({
+    url: '/pages/markdown-test'
+  })
+}
+
 const html = reactive({
   content1: `\`\`\`python
 def fibonacci(n):
@@ -38,6 +45,11 @@ pie title 项目进度
 
 <template>
   <view class="container">
+    <!-- 导航按钮 -->
+    <view class="nav-section">
+      <button @click="goToMarkdownTest" class="nav-btn">测试 Markdown 组件</button>
+    </view>
+    
     <view class="section">
       <text class="title">
         Python代码高亮
@@ -71,6 +83,26 @@ pie title 项目进度
 <style scoped>
 .container {
 	padding: 20px;
+}
+
+.nav-section {
+	margin-bottom: 20px;
+	text-align: center;
+}
+
+.nav-btn {
+	padding: 12px 24px;
+	background-color: #007aff;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	font-size: 16px;
+	cursor: pointer;
+	transition: background-color 0.3s;
+}
+
+.nav-btn:hover {
+	background-color: #0056cc;
 }
 
 .section {
