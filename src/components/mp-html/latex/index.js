@@ -4,7 +4,7 @@
  */
 import parse from './katex.min'
 
-function Latex() {
+function Latex () {
 
 }
 
@@ -21,10 +21,9 @@ Latex.prototype.onParse = function (node, vm) {
           if (status === 0) {
             children.push({
               type: 'text',
-              text: part[i],
+              text: part[i]
             })
-          }
-          else {
+          } else {
             if (status === 1) {
               // 行内公式
               const nodes = parse.default(part[i])
@@ -33,38 +32,34 @@ Latex.prototype.onParse = function (node, vm) {
                 attrs: {},
                 l: 'T',
                 f: 'display:inline-block',
-                children: nodes,
+                children: nodes
               })
-            }
-            else {
+            } else {
               // 块公式
               const nodes = parse.default(part[i], {
-                displayMode: true,
+                displayMode: true
               })
               children.push({
                 name: 'div',
                 attrs: {
-                  style: 'text-align:center',
+                  style: 'text-align:center'
                 },
-                children: nodes,
+                children: nodes
               })
             }
           }
         }
-      }
-      else {
+      } else {
         // 分隔符
         if (part[i] === '$' && part[i + 2] === '$') {
           // 行内公式
           status = 1
           part[i + 2] = ''
-        }
-        else if (part[i] === '$$' && part[i + 2] === '$$') {
+        } else if (part[i] === '$$' && part[i + 2] === '$$') {
           // 块公式
           status = 2
           part[i + 2] = ''
-        }
-        else {
+        } else {
           if (part[i] && part[i] !== '$$') {
             // 普通$符号
             part[i + 1] = part[i] + part[i + 1]

@@ -3,10 +3,10 @@ const blank = {
   '\n': true,
   '\t': true,
   '\r': true,
-  '\f': true,
+  '\f': true
 }
 
-function Parser() {
+function Parser () {
   this.styles = []
   this.selectors = []
 }
@@ -26,8 +26,7 @@ Parser.prototype.parse = function (content) {
  */
 Parser.prototype.onSelector = function (name) {
   // 不支持的选择器
-  if (name.includes('[') || name.includes('*') || name.includes('@'))
-    return
+  if (name.includes('[') || name.includes('*') || name.includes('@')) return
   const selector = {}
   // 伪类
   if (name.includes(':')) {
@@ -36,14 +35,11 @@ Parser.prototype.onSelector = function (name) {
     if (pseudo === 'before' || pseudo === 'after') {
       selector.pseudo = pseudo
       name = info[0]
-    }
-    else {
-      return
-    }
+    } else return
   }
 
   // 分割交集选择器
-  function splitItem(str) {
+  function splitItem (str) {
     const arr = []
     let i, start
     for (i = 1, start = 0; i < str.length; i++) {
@@ -54,8 +50,7 @@ Parser.prototype.onSelector = function (name) {
     }
     if (!arr.length) {
       return str
-    }
-    else {
+    } else {
       arr.push(str.substring(start, i))
       return arr
     }
@@ -77,8 +72,7 @@ Parser.prototype.onSelector = function (name) {
         }
       }
     }
-  }
-  else {
+  } else {
     selector.key = splitItem(name)
   }
 
@@ -102,7 +96,7 @@ Parser.prototype.onContent = function (content) {
  * @description css 词法分析器
  * @param {object} handler 高层处理器
  */
-function Lexer(handler) {
+function Lexer (handler) {
   this.selector = ''
   this.style = ''
   this.handler = handler
@@ -149,15 +143,12 @@ Lexer.prototype.name = function (c) {
     if (this.content[this.i] === '{') {
       this.floor = 1
       this.state = this.val
-    }
-    else {
+    } else {
       this.selector += this.content[this.i]
     }
-  }
-  else if (blank[c]) {
+  } else if (blank[c]) {
     this.selector += ' '
-  }
-  else {
+  } else {
     this.selector += c
   }
 }
@@ -169,8 +160,7 @@ Lexer.prototype.val = function (c) {
   }
   if (c === '{') {
     this.floor++
-  }
-  else if (c === '}') {
+  } else if (c === '}') {
     this.floor--
     if (!this.floor) {
       this.handler.onContent(this.style)

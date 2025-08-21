@@ -5,7 +5,7 @@
 import Parser from './parser'
 // #endif
 
-function Style() {
+function Style () {
   this.styles = []
 }
 
@@ -14,8 +14,7 @@ Style.prototype.onParse = function (node, vm) {
   // 获取样式
   if (node.name === 'style' && node.children.length && node.children[0].type === 'text') {
     this.styles = this.styles.concat(new Parser().parse(node.children[0].text))
-  }
-  else if (node.name) {
+  } else if (node.name) {
     // 匹配样式（对非文本标签）
     // 存储不同优先级的样式 name < class < id < 后代
     let matched = ['', '', '', '']
@@ -31,16 +30,13 @@ Style.prototype.onParse = function (node, vm) {
             // 子选择器
             if (item.list[j] === '>') {
               // 错误情况
-              if (j < 1 || j > item.list.length - 2)
-                break
+              if (j < 1 || j > item.list.length - 2) break
               if (match(vm.stack[k], item.list[j - 1])) {
                 j -= 2
-              }
-              else {
+              } else {
                 j++
               }
-            }
-            else if (match(vm.stack[k], item.list[j])) {
+            } else if (match(vm.stack[k], item.list[j])) {
               j--
             }
           }
@@ -55,27 +51,25 @@ Style.prototype.onParse = function (node, vm) {
                 // 处理 attr 函数
                 .replace(/attr\((.+?)\)/, (_, $1) => node.attrs[$1.trim()] || '')
                 // 编码 \xxx
-                .replace(/\\(\w{4})/, (_, $1) => String.fromCharCode(Number.parseInt($1, 16)))
+                .replace(/\\(\w{4})/, (_, $1) => String.fromCharCode(parseInt($1, 16)))
               return ''
             })
             const pseudo = {
               name: 'span',
               attrs: {
-                style: item.style,
+                style: item.style
               },
               children: [{
                 type: 'text',
-                text,
-              }],
+                text
+              }]
             }
             if (item.pseudo === 'before') {
               node.children.unshift(pseudo)
-            }
-            else {
+            } else {
               node.children.push(pseudo)
             }
-          }
-          else {
+          } else {
             matched[res - 1] += item.style + (item.style[item.style.length - 1] === ';' ? '' : ';')
           }
         }
@@ -94,23 +88,19 @@ Style.prototype.onParse = function (node, vm) {
  * @param {string|string[]} keys 选择器
  * @returns {number} 0：不匹配；1：name 匹配；2：class 匹配；3：id 匹配
  */
-function match(node, keys) {
-  function matchItem(key) {
+function match (node, keys) {
+  function matchItem (key) {
     if (key[0] === '#') {
       // 匹配 id
-      if (node.attrs.id && node.attrs.id.trim() === key.substr(1))
-        return 3
-    }
-    else if (key[0] === '.') {
+      if (node.attrs.id && node.attrs.id.trim() === key.substr(1)) return 3
+    } else if (key[0] === '.') {
       // 匹配 class
       key = key.substr(1)
       const selectors = (node.attrs.class || '').split(' ')
       for (let i = 0; i < selectors.length; i++) {
-        if (selectors[i].trim() === key)
-          return 2
+        if (selectors[i].trim() === key) return 2
       }
-    }
-    else if (node.name === key) {
+    } else if (node.name === key) {
       // 匹配 name
       return 1
     }
@@ -118,13 +108,12 @@ function match(node, keys) {
   }
 
   // 多选择器交集
-  if (Array.isArray(keys)) {
+  if (keys instanceof Array) {
     let res = 0
     for (let j = 0; j < keys.length; j++) {
       const tmp = matchItem(keys[j])
       // 任意一个不匹配就失败
-      if (!tmp)
-        return 0
+      if (!tmp) return 0
       // 优先级最大的一个作为最终优先级
       if (tmp > res) {
         res = tmp

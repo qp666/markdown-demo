@@ -5,11 +5,7 @@
 
 interface NavigateToOptions {
   url: "/pages/index" |
-       "/pages/hi" |
-       "/pages/index-mermaid" |
-       "/pages/mermaid-test" |
-       "/pages/migration-example" |
-       "/pages/test-mermaid";
+       "/pages/hi";
 }
 interface RedirectToOptions extends NavigateToOptions {}
 

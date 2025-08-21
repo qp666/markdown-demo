@@ -9,7 +9,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     AppFooter: typeof import('./components/AppFooter.vue')['default']
     AppLogos: typeof import('./components/AppLogos.vue')['default']
-    DoocsMarkdown: typeof import('./components/doocs-markdown/index.vue')['default']
     HiCounter: typeof import('./components/HiCounter.vue')['default']
     InputEntry: typeof import('./components/InputEntry.vue')['default']
     MpHtmlMpHtml: typeof import('./components/mp-html/mp-html.vue')['default']

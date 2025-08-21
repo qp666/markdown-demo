@@ -7,22 +7,6 @@
     {
       "path": "pages/hi",
       "type": "page"
-    },
-    {
-      "path": "pages/index-mermaid",
-      "type": "page"
-    },
-    {
-      "path": "pages/mermaid-test",
-      "type": "page"
-    },
-    {
-      "path": "pages/migration-example",
-      "type": "page"
-    },
-    {
-      "path": "pages/test-mermaid",
-      "type": "page"
     }
   ],
   "globalStyle": {

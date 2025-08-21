@@ -26,7 +26,7 @@ const config = {
     lt: '<',
     gt: '>',
     quot: '"',
-    apos: '\'',
+    apos: "'",
     ensp: '\u2002',
     emsp: '\u2003',
     nbsp: '\xA0',
@@ -43,7 +43,7 @@ const config = {
     larr: '←',
     uarr: '↑',
     rarr: '→',
-    darr: '↓',
+    darr: '↓'
   },
 
   // 默认的标签样式
@@ -60,7 +60,7 @@ const config = {
     s: 'text-decoration:line-through',
     small: 'display:inline;font-size:0.8em',
     strike: 'text-decoration:line-through',
-    u: 'text-decoration:underline',
+    u: 'text-decoration:underline'
     // #endif
   },
 
@@ -72,17 +72,16 @@ const config = {
     attributename: 'attributeName',
     repeatcount: 'repeatCount',
     repeatdur: 'repeatDur',
-    foreignobject: 'foreignObject',
-  },
+    foreignobject: 'foreignObject'
+  }
 }
-const tagSelector = {}
+const tagSelector={}
 let windowWidth, system
 // #ifdef MP-WEIXIN
 if (uni.canIUse('getWindowInfo')) {
   windowWidth = uni.getWindowInfo().windowWidth
   system = uni.getDeviceInfo().system
-}
-else {
+} else {
 // #endif
   const systemInfo = uni.getSystemInfoSync()
   windowWidth = systemInfo.windowWidth
@@ -106,9 +105,9 @@ config.ignoreTags.style = undefined
 
 /**
  * @description 创建 map
- * @param {string} str 逗号分隔
+ * @param {String} str 逗号分隔
  */
-function makeMap(str) {
+function makeMap (str) {
   const map = Object.create(null)
   const list = str.split(',')
   for (let i = list.length; i--;) {
@@ -119,25 +118,23 @@ function makeMap(str) {
 
 /**
  * @description 解码 html 实体
- * @param {string} str 要解码的字符串
- * @param {boolean} amp 要不要解码 &amp;
- * @returns {string} 解码后的字符串
+ * @param {String} str 要解码的字符串
+ * @param {Boolean} amp 要不要解码 &amp;
+ * @returns {String} 解码后的字符串
  */
-function decodeEntity(str, amp) {
+function decodeEntity (str, amp) {
   let i = str.indexOf('&')
   while (i !== -1) {
     const j = str.indexOf(';', i + 3)
     let code
-    if (j === -1)
-      break
+    if (j === -1) break
     if (str[i + 1] === '#') {
       // &#123; 形式的实体
-      code = Number.parseInt((str[i + 2] === 'x' ? '0' : '') + str.substring(i + 2, j))
+      code = parseInt((str[i + 2] === 'x' ? '0' : '') + str.substring(i + 2, j))
       if (!isNaN(code)) {
         str = str.substr(0, i) + String.fromCharCode(code) + str.substr(j + 1)
       }
-    }
-    else {
+    } else {
       // &nbsp; 形式的实体
       code = str.substring(i + 1, j)
       if (config.entities[code] || (code === 'amp' && amp)) {
@@ -153,7 +150,7 @@ function decodeEntity(str, amp) {
  * @description 合并多个块级标签，加快长内容渲染
  * @param {Array} nodes 要合并的标签数组
  */
-function mergeNodes(nodes) {
+function mergeNodes (nodes) {
   let i = nodes.length - 1
   for (let j = i; j >= -1; j--) {
     if (j === -1 || nodes[j].c || !nodes[j].name || (nodes[j].name !== 'div' && nodes[j].name !== 'p' && nodes[j].name[0] !== 'h') || (nodes[j].attrs.style || '').includes('inline')) {
@@ -161,7 +158,7 @@ function mergeNodes(nodes) {
         nodes.splice(j + 1, i - j, {
           name: 'div',
           attrs: {},
-          children: nodes.slice(j + 1, i + 1),
+          children: nodes.slice(j + 1, i + 1)
         })
       }
       i = j - 1
@@ -171,9 +168,9 @@ function mergeNodes(nodes) {
 
 /**
  * @description html 解析器
- * @param {object} vm 组件实例
+ * @param {Object} vm 组件实例
  */
-function Parser(vm) {
+function Parser (vm) {
   this.options = vm || {}
   this.tagStyle = Object.assign({}, config.tagStyle, this.options.tagStyle)
   this.imgList = vm.imgList || []
@@ -187,7 +184,7 @@ function Parser(vm) {
 
 /**
  * @description 执行解析
- * @param {string} content 要解析的文本
+ * @param {String} content 要解析的文本
  */
 Parser.prototype.parse = function (content) {
   // 插件处理
@@ -215,8 +212,7 @@ Parser.prototype.expose = function () {
   // #ifndef APP-PLUS-NVUE
   for (let i = this.stack.length; i--;) {
     const item = this.stack[i]
-    if (item.c || item.name === 'a' || item.name === 'video' || item.name === 'audio')
-      return
+    if (item.c || item.name === 'a' || item.name === 'video' || item.name === 'audio') return
     item.c = 1
   }
   // #endif
@@ -224,8 +220,8 @@ Parser.prototype.expose = function () {
 
 /**
  * @description 处理插件
- * @param {object} node 要处理的标签
- * @returns {boolean} 是否要移除此标签
+ * @param {Object} node 要处理的标签
+ * @returns {Boolean} 是否要移除此标签
  */
 Parser.prototype.hook = function (node) {
   for (let i = this.plugins.length; i--;) {
@@ -238,29 +234,25 @@ Parser.prototype.hook = function (node) {
 
 /**
  * @description 将链接拼接上主域名
- * @param {string} url 需要拼接的链接
- * @returns {string} 拼接后的链接
+ * @param {String} url 需要拼接的链接
+ * @returns {String} 拼接后的链接
  */
 Parser.prototype.getUrl = function (url) {
   const domain = this.options.domain
   if (url[0] === '/') {
     if (url[1] === '/') {
       // // 开头的补充协议名
-      url = `${domain ? domain.split('://')[0] : 'http'}:${url}`
-    }
-    else if (domain) {
+      url = (domain ? domain.split('://')[0] : 'http') + ':' + url
+    } else if (domain) {
       // 否则补充整个域名
       url = domain + url
-    }
-    /* #ifdef APP-PLUS */ else {
+    } /* #ifdef APP-PLUS */ else {
       url = plus.io.convertLocalFileSystemURL(url)
     } /* #endif */
-  }
-  else if (!url.includes('data:') && !url.includes('://')) {
+  } else if (!url.includes('data:') && !url.includes('://')) {
     if (domain) {
-      url = `${domain}/${url}`
-    }
-    /* #ifdef APP-PLUS */ else {
+      url = domain + '/' + url
+    } /* #ifdef APP-PLUS */ else {
       url = plus.io.convertLocalFileSystemURL(url)
     } /* #endif */
   }
@@ -269,8 +261,8 @@ Parser.prototype.getUrl = function (url) {
 
 /**
  * @description 解析样式表
- * @param {object} node 标签
- * @returns {object}
+ * @param {Object} node 标签
+ * @returns {Object}
  */
 Parser.prototype.parseStyle = function (node) {
   const attrs = node.attrs
@@ -282,47 +274,43 @@ Parser.prototype.parseStyle = function (node) {
     // 暴露锚点
     if (this.options.useAnchor) {
       this.expose()
-    }
-    else if (node.name !== 'img' && node.name !== 'a' && node.name !== 'video' && node.name !== 'audio') {
+    } else if (node.name !== 'img' && node.name !== 'a' && node.name !== 'video' && node.name !== 'audio') {
       attrs.id = undefined
     }
   }
 
   // 转换 width 和 height 属性
   if (attrs.width) {
-    styleObj.width = Number.parseFloat(attrs.width) + (attrs.width.includes('%') ? '%' : 'px')
+    styleObj.width = parseFloat(attrs.width) + (attrs.width.includes('%') ? '%' : 'px')
     attrs.width = undefined
   }
   if (attrs.height) {
-    styleObj.height = Number.parseFloat(attrs.height) + (attrs.height.includes('%') ? '%' : 'px')
+    styleObj.height = parseFloat(attrs.height) + (attrs.height.includes('%') ? '%' : 'px')
     attrs.height = undefined
   }
 
   for (let i = 0, len = list.length; i < len; i++) {
     const info = list[i].split(':')
-    if (info.length < 2)
-      continue
+    if (info.length < 2) continue
     const key = info.shift().trim().toLowerCase()
     let value = info.join(':').trim()
     if ((value[0] === '-' && value.lastIndexOf('-') > 0) || value.includes('safe')) {
       // 兼容性的 css 不压缩
       tmp += `;${key}:${value}`
-    }
-    else if (!styleObj[key] || value.includes('import') || !styleObj[key].includes('import')) {
+    } else if (!styleObj[key] || value.includes('import') || !styleObj[key].includes('import')) {
       // 重复的样式进行覆盖
       if (value.includes('url')) {
         // 填充链接
         let j = value.indexOf('(') + 1
         if (j) {
-          while (value[j] === '"' || value[j] === '\'' || blankChar[value[j]]) {
+          while (value[j] === '"' || value[j] === "'" || blankChar[value[j]]) {
             j++
           }
           value = value.substr(0, j) + this.getUrl(value.substr(j))
         }
-      }
-      else if (value.includes('rpx')) {
+      } else if (value.includes('rpx')) {
         // 转换 rpx（rich-text 内部不支持 rpx）
-        value = value.replace(/[0-9.]+\s*rpx/g, $ => `${Number.parseFloat($) * windowWidth / 750}px`)
+        value = value.replace(/[0-9.]+\s*rpx/g, $ => parseFloat($) * windowWidth / 750 + 'px')
       }
       styleObj[key] = value
     }
@@ -334,7 +322,7 @@ Parser.prototype.parseStyle = function (node) {
 
 /**
  * @description 解析到标签名
- * @param {string} name 标签名
+ * @param {String} name 标签名
  * @private
  */
 Parser.prototype.onTagName = function (name) {
@@ -347,7 +335,7 @@ Parser.prototype.onTagName = function (name) {
 
 /**
  * @description 解析到属性名
- * @param {string} name 属性名
+ * @param {String} name 属性名
  * @private
  */
 Parser.prototype.onAttrName = function (name) {
@@ -362,17 +350,14 @@ Parser.prototype.onAttrName = function (name) {
     if (name === 'data-src' && !this.attrs.src) {
       // data-src 自动转为 src
       this.attrName = 'src'
-    }
-    else if (this.tagName === 'img' || this.tagName === 'a') {
+    } else if (this.tagName === 'img' || this.tagName === 'a') {
       // a 和 img 标签保留 data- 的属性，可以在 imgtap 和 linktap 事件中使用
       this.attrName = name
-    }
-    else {
+    } else {
       // 剩余的移除以减小大小
       this.attrName = undefined
     }
-  }
-  else {
+  } else {
     this.attrName = name
     this.attrs[name] = 'T' // boolean 型属性缺省设置
   }
@@ -380,7 +365,7 @@ Parser.prototype.onAttrName = function (name) {
 
 /**
  * @description 解析到属性值
- * @param {string} val 属性值
+ * @param {String} val 属性值
  * @private
  */
 Parser.prototype.onAttrVal = function (val) {
@@ -388,19 +373,17 @@ Parser.prototype.onAttrVal = function (val) {
   if (name === 'style' || name === 'href') {
     // 部分属性进行实体解码
     this.attrs[name] = decodeEntity(val, true)
-  }
-  else if (name.includes('src')) {
+  } else if (name.includes('src')) {
     // 拼接主域名
     this.attrs[name] = this.getUrl(decodeEntity(val, true))
-  }
-  else if (name) {
+  } else if (name) {
     this.attrs[name] = val
   }
 }
 
 /**
  * @description 解析到标签开始
- * @param {boolean} selfClose 是否有自闭合标识 />
+ * @param {Boolean} selfClose 是否有自闭合标识 />
  * @private
  */
 Parser.prototype.onOpenTag = function (selfClose) {
@@ -421,7 +404,7 @@ Parser.prototype.onOpenTag = function (selfClose) {
 
   // 替换标签名选择器
   if (tagSelector[node.name]) {
-    attrs.class = tagSelector[node.name] + (attrs.class ? ` ${attrs.class}` : '')
+    attrs.class = tagSelector[node.name] + (attrs.class ? ' ' + attrs.class : '')
   }
 
   // 转换 embed 标签
@@ -431,8 +414,7 @@ Parser.prototype.onOpenTag = function (selfClose) {
     // 按照后缀名和 type 将 embed 转为 video 或 audio
     if (src.includes('.mp4') || src.includes('.3gp') || src.includes('.m3u8') || (attrs.type || '').includes('video')) {
       node.name = 'video'
-    }
-    else if (src.includes('.mp3') || src.includes('.wav') || src.includes('.aac') || src.includes('.m4a') || (attrs.type || '').includes('audio')) {
+    } else if (src.includes('.mp3') || src.includes('.wav') || src.includes('.aac') || src.includes('.m4a') || (attrs.type || '').includes('audio')) {
       node.name = 'audio'
     }
     if (attrs.autostart) {
@@ -450,7 +432,7 @@ Parser.prototype.onOpenTag = function (selfClose) {
   if (node.name === 'video' || node.name === 'audio') {
     // 设置 id 以便获取 context
     if (node.name === 'video' && !attrs.id) {
-      attrs.id = `v${idIndex++}`
+      attrs.id = 'v' + idIndex++
     }
     // 没有设置 controls 也没有设置 autoplay 的自动设置 controls
     if (!attrs.controls && !attrs.autoplay) {
@@ -472,8 +454,7 @@ Parser.prototype.onOpenTag = function (selfClose) {
       // 通过 base 标签设置主域名
       if (node.name === 'base' && !this.options.domain) {
         this.options.domain = attrs.href
-      }
-      /* #ifndef APP-PLUS-NVUE */ else if (node.name === 'source' && parent && (parent.name === 'video' || parent.name === 'audio') && attrs.src) {
+      } /* #ifndef APP-PLUS-NVUE */ else if (node.name === 'source' && parent && (parent.name === 'video' || parent.name === 'audio') && attrs.src) {
         // 设置 source 标签（仅父节点为 video 或 audio 时有效）
         parent.src.push(attrs.src)
       } /* #endif */
@@ -503,22 +484,20 @@ Parser.prototype.onOpenTag = function (selfClose) {
             if (item.name === 'table' && !node.webp && !attrs.src.includes('cloud://')) {
               if (!styleObj.display || styleObj.display.includes('inline')) {
                 node.t = 'inline-block'
-              }
-              else {
+              } else {
                 node.t = styleObj.display
               }
               styleObj.display = undefined
             }
             // #ifndef H5 || APP-PLUS
             const style = item.attrs.style || ''
-            if (style.includes('flex:') && !style.includes('flex:0') && !style.includes('flex: 0') && (!styleObj.width || Number.parseInt(styleObj.width) > 100)) {
+            if (style.includes('flex:') && !style.includes('flex:0') && !style.includes('flex: 0') && (!styleObj.width || parseInt(styleObj.width) > 100)) {
               styleObj.width = '100% !important'
               styleObj.height = ''
               for (let j = i + 1; j < this.stack.length; j++) {
                 this.stack[j].attrs.style = (this.stack[j].attrs.style || '').replace('inline-', '')
               }
-            }
-            else if (style.includes('flex') && styleObj.width === '100%') {
+            } else if (style.includes('flex') && styleObj.width === '100%') {
               for (let j = i + 1; j < this.stack.length; j++) {
                 const style = this.stack[j].attrs.style || ''
                 if (!style.includes(';width') && !style.includes(' width') && style.indexOf('width') !== 0) {
@@ -526,13 +505,11 @@ Parser.prototype.onOpenTag = function (selfClose) {
                   break
                 }
               }
-            }
-            else if (style.includes('inline-block')) {
+            } else if (style.includes('inline-block')) {
               if (styleObj.width && styleObj.width[styleObj.width.length - 1] === '%') {
-                item.attrs.style += `;max-width:${styleObj.width}`
+                item.attrs.style += ';max-width:' + styleObj.width
                 styleObj.width = ''
-              }
-              else {
+              } else {
                 item.attrs.style += ';max-width:100%'
               }
             }
@@ -549,8 +526,7 @@ Parser.prototype.onOpenTag = function (selfClose) {
               i += 3
               let newSrc = src.substr(0, i)
               for (; i < src.length; i++) {
-                if (src[i] === '/')
-                  break
+                if (src[i] === '/') break
                 newSrc += Math.random() > 0.5 ? src[i].toUpperCase() : src[i]
               }
               newSrc += src.substr(i)
@@ -580,26 +556,24 @@ Parser.prototype.onOpenTag = function (selfClose) {
       }
       // #endif
       // 设置的宽度超出屏幕，为避免变形，高度转为自动
-      if (Number.parseInt(styleObj.width) > windowWidth) {
+      if (parseInt(styleObj.width) > windowWidth) {
         styleObj.height = undefined
       }
       // 记录是否设置了宽高
-      if (!isNaN(Number.parseInt(styleObj.width))) {
+      if (!isNaN(parseInt(styleObj.width))) {
         node.w = 'T'
       }
-      if (!isNaN(Number.parseInt(styleObj.height)) && (!styleObj.height.includes('%') || (parent && (parent.attrs.style || '').includes('height')))) {
+      if (!isNaN(parseInt(styleObj.height)) && (!styleObj.height.includes('%') || (parent && (parent.attrs.style || '').includes('height')))) {
         node.h = 'T'
       }
       if (node.w && node.h && styleObj['object-fit']) {
         if (styleObj['object-fit'] === 'contain') {
           node.m = 'aspectFit'
-        }
-        else if (styleObj['object-fit'] === 'cover') {
+        } else if (styleObj['object-fit'] === 'cover') {
           node.m = 'aspectFill'
         }
       }
-    }
-    else if (node.name === 'svg') {
+    } else if (node.name === 'svg') {
       siblings.push(node)
       this.stack.push(node)
       this.popNode()
@@ -616,8 +590,7 @@ Parser.prototype.onOpenTag = function (selfClose) {
       delete attrs.style
     }
     // #endif
-  }
-  else {
+  } else {
     if ((node.name === 'pre' || ((attrs.style || '').includes('white-space') && attrs.style.includes('pre'))) && this.pre !== 2) {
       this.pre = node.pre = 1
     }
@@ -631,7 +604,7 @@ Parser.prototype.onOpenTag = function (selfClose) {
 
 /**
  * @description 解析到标签结束
- * @param {string} name 标签名
+ * @param {String} name 标签名
  * @private
  */
 Parser.prototype.onCloseTag = function (name) {
@@ -639,22 +612,20 @@ Parser.prototype.onCloseTag = function (name) {
   name = this.xml ? name : name.toLowerCase()
   let i
   for (i = this.stack.length; i--;) {
-    if (this.stack[i].name === name)
-      break
+    if (this.stack[i].name === name) break
   }
   if (i !== -1) {
     while (this.stack.length > i) {
       this.popNode()
     }
-  }
-  else if (name === 'p' || name === 'br') {
+  } else if (name === 'p' || name === 'br') {
     const siblings = this.stack.length ? this.stack[this.stack.length - 1].children : this.nodes
     siblings.push({
       name,
       attrs: {
         class: tagSelector[name] || '',
-        style: this.tagStyle[name] || '',
-      },
+        style: this.tagStyle[name] || ''
+      }
     })
   }
 }
@@ -674,7 +645,7 @@ Parser.prototype.popNode = function () {
     // 获取标题
     if (node.name === 'title' && children.length && children[0].type === 'text' && this.options.setTitle) {
       uni.setNavigationBarTitle({
-        title: children[0].text,
+        title: children[0].text
       })
     }
     siblings.pop()
@@ -701,7 +672,7 @@ Parser.prototype.popNode = function () {
       return
     }
     // #ifdef APP-PLUS-NVUE
-    (function traversal(node) {
+    (function traversal (node) {
       if (node.name) {
         // 调整 svg 的大小写
         node.name = config.svgDict[node.name] || node.name
@@ -722,7 +693,7 @@ Parser.prototype.popNode = function () {
     const style = attrs.style
     attrs.style = ''
     attrs.xmlns = 'http://www.w3.org/2000/svg';
-    (function traversal(node) {
+    (function traversal (node) {
       if (node.type === 'text') {
         src += node.text
         return
@@ -736,7 +707,7 @@ Parser.prototype.popNode = function () {
           }
         }
       }
-      src += `<${name}`
+      src += '<' + name
       for (const item in node.attrs) {
         const val = node.attrs[item]
         if (val) {
@@ -745,20 +716,19 @@ Parser.prototype.popNode = function () {
       }
       if (!node.children) {
         src += '/>'
-      }
-      else {
+      } else {
         src += '>'
         for (let i = 0; i < node.children.length; i++) {
           traversal(node.children[i])
         }
-        src += `</${name}>`
+        src += '</' + name + '>'
       }
     })(node)
     node.name = 'img'
     node.attrs = {
-      src: `data:image/svg+xml;utf8,${src.replace(/#/g, '%23')}`,
+      src: 'data:image/svg+xml;utf8,' + src.replace(/#/g, '%23'),
       style,
-      ignore: 'T',
+      ignore: 'T'
     }
     node.children = undefined
     // #endif
@@ -773,12 +743,10 @@ Parser.prototype.popNode = function () {
     if (node.name === 'table') {
       if (attrs.align === 'center') {
         styleObj['margin-inline-start'] = styleObj['margin-inline-end'] = 'auto'
-      }
-      else {
+      } else {
         styleObj.float = attrs.align
       }
-    }
-    else {
+    } else {
       styleObj['text-align'] = attrs.align
     }
     attrs.align = undefined
@@ -801,12 +769,11 @@ Parser.prototype.popNode = function () {
       attrs.face = undefined
     }
     if (attrs.size) {
-      let size = Number.parseInt(attrs.size)
+      let size = parseInt(attrs.size)
       if (!isNaN(size)) {
         if (size < 1) {
           size = 1
-        }
-        else if (size > 7) {
+        } else if (size > 7) {
           size = 7
         }
         styleObj['font-size'] = ['x-small', 'small', 'medium', 'large', 'x-large', 'xx-large', 'xxx-large'][size - 1]
@@ -823,7 +790,7 @@ Parser.prototype.popNode = function () {
 
   Object.assign(styleObj, this.parseStyle(node))
 
-  if (node.name !== 'table' && Number.parseInt(styleObj.width) > windowWidth) {
+  if (node.name !== 'table' && parseInt(styleObj.width) > windowWidth) {
     styleObj['max-width'] = '100%'
     styleObj['box-sizing'] = 'border-box'
   }
@@ -831,20 +798,18 @@ Parser.prototype.popNode = function () {
   // #ifndef APP-PLUS-NVUE
   if (config.blockTags[node.name]) {
     node.name = 'div'
-  }
-  else if (!config.trustTags[node.name] && !this.xml) {
+  } else if (!config.trustTags[node.name] && !this.xml) {
     // 未知标签转为 span，避免无法显示
     node.name = 'span'
   }
 
   if (node.name === 'a' || node.name === 'ad'
     // #ifdef H5 || APP-PLUS
-    || node.name === 'iframe'
+    || node.name === 'iframe' // eslint-disable-line
     // #endif
   ) {
     this.expose()
-  }
-  else if (node.name === 'video') {
+  } else if (node.name === 'video') {
     if ((styleObj.height || '').includes('auto')) {
       styleObj.height = undefined
     }
@@ -852,7 +817,7 @@ Parser.prototype.popNode = function () {
     let str = '<video style="width:100%;height:100%"'
     for (const item in attrs) {
       if (attrs[item]) {
-        str += ` ${item}="${attrs[item]}"`
+        str += ' ' + item + '="' + attrs[item] + '"'
       }
     }
     if (this.options.pauseVideo) {
@@ -860,22 +825,21 @@ Parser.prototype.popNode = function () {
     }
     str += '>'
     for (let i = 0; i < node.src.length; i++) {
-      str += `<source src="${node.src[i]}">`
+      str += '<source src="' + node.src[i] + '">'
     }
     str += '</video>'
     node.html = str
     /* #endif */
-  }
-  else if ((node.name === 'ul' || node.name === 'ol') && node.c) {
+  } else if ((node.name === 'ul' || node.name === 'ol') && node.c) {
     // 列表处理
     const types = {
       a: 'lower-alpha',
       A: 'upper-alpha',
       i: 'lower-roman',
-      I: 'upper-roman',
+      I: 'upper-roman'
     }
     if (types[attrs.type]) {
-      attrs.style += `;list-style-type:${types[attrs.type]}`
+      attrs.style += ';list-style-type:' + types[attrs.type]
       attrs.type = undefined
     }
     for (let i = children.length; i--;) {
@@ -883,13 +847,12 @@ Parser.prototype.popNode = function () {
         children[i].c = 1
       }
     }
-  }
-  else if (node.name === 'table') {
+  } else if (node.name === 'table') {
     // 表格处理
     // cellpadding、cellspacing、border 这几个常用表格属性需要通过转换实现
-    let padding = Number.parseFloat(attrs.cellpadding)
-    let spacing = Number.parseFloat(attrs.cellspacing)
-    const border = Number.parseFloat(attrs.border)
+    let padding = parseFloat(attrs.cellpadding)
+    let spacing = parseFloat(attrs.cellspacing)
+    const border = parseFloat(attrs.border)
     const bordercolor = styleObj['border-color']
     const borderstyle = styleObj['border-style']
     if (node.c) {
@@ -912,10 +875,9 @@ Parser.prototype.popNode = function () {
         spacing = 0
       }
       if (spacing) {
-        styleObj['grid-gap'] = `${spacing}px`
-        styleObj.padding = `${spacing}px`
-      }
-      else if (border) {
+        styleObj['grid-gap'] = spacing + 'px'
+        styleObj.padding = spacing + 'px'
+      } else if (border) {
         // 无间隔的情况下避免边框重叠
         attrs.style += ';border-left:0;border-top:0'
       }
@@ -925,12 +887,11 @@ Parser.prototype.popNode = function () {
       const cells = [] // 保存新的单元格
       const map = {}; // 被合并单元格占用的格子
 
-      (function traversal(nodes) {
+      (function traversal (nodes) {
         for (let i = 0; i < nodes.length; i++) {
           if (nodes[i].name === 'tr') {
             trList.push(nodes[i])
-          }
-          else if (nodes[i].name === 'colgroup') {
+          } else if (nodes[i].name === 'colgroup') {
             let colI = 1
             for (const col of (nodes[i].children || [])) {
               if (col.name === 'col') {
@@ -947,8 +908,7 @@ Parser.prototype.popNode = function () {
                 colI += 1
               }
             }
-          }
-          else {
+          } else {
             traversal(nodes[i].children || [])
           }
         }
@@ -960,7 +920,7 @@ Parser.prototype.popNode = function () {
           const td = trList[row - 1].children[j]
           if (td.name === 'td' || td.name === 'th') {
             // 这个格子被上面的单元格占用，则列号++
-            while (map[`${row}.${col}`]) {
+            while (map[row + '.' + col]) {
               col++
             }
             let style = td.attrs.style || ''
@@ -983,12 +943,10 @@ Parser.prototype.popNode = function () {
               const val = style.substr(start + 15, 10)
               if (val.includes('middle')) {
                 style += ';align-items:center'
-              }
-              else if (val.includes('bottom')) {
+              } else if (val.includes('bottom')) {
                 style += ';align-items:flex-end'
               }
-            }
-            else {
+            } else {
               style += ';align-items:center'
             }
             // 设置水平对齐
@@ -997,30 +955,29 @@ Parser.prototype.popNode = function () {
               const val = style.substr(start + 11, 10)
               if (val.includes('center')) {
                 style += ';justify-content: center'
-              }
-              else if (val.includes('right')) {
+              } else if (val.includes('right')) {
                 style += ';justify-content: right'
               }
             }
-            style = `${(border ? `;border:${border}px ${borderstyle || 'solid'} ${bordercolor || 'gray'}${spacing ? '' : ';border-right:0;border-bottom:0'}` : '') + (padding ? `;padding:${padding}px` : '')};${style}`
+            style = (border ? `;border:${border}px ${borderstyle || 'solid'} ${bordercolor || 'gray'}` + (spacing ? '' : ';border-right:0;border-bottom:0') : '') + (padding ? `;padding:${padding}px` : '') + ';' + style
             // 处理列合并
             if (td.attrs.colspan) {
-              style += `;grid-column-start:${col};grid-column-end:${col + Number.parseInt(td.attrs.colspan)}`
+              style += `;grid-column-start:${col};grid-column-end:${col + parseInt(td.attrs.colspan)}`
               if (!td.attrs.rowspan) {
                 style += `;grid-row-start:${row};grid-row-end:${row + 1}`
               }
-              col += Number.parseInt(td.attrs.colspan) - 1
+              col += parseInt(td.attrs.colspan) - 1
             }
             // 处理行合并
             if (td.attrs.rowspan) {
-              style += `;grid-row-start:${row};grid-row-end:${row + Number.parseInt(td.attrs.rowspan)}`
+              style += `;grid-row-start:${row};grid-row-end:${row + parseInt(td.attrs.rowspan)}`
               if (!td.attrs.colspan) {
                 style += `;grid-column-start:${col};grid-column-end:${col + 1}`
               }
               // 记录下方单元格被占用
               for (let rowspan = 1; rowspan < td.attrs.rowspan; rowspan++) {
                 for (let colspan = 0; colspan < (td.attrs.colspan || 1); colspan++) {
-                  map[`${row + rowspan}.${col - colspan}`] = 1
+                  map[(row + rowspan) + '.' + (col - colspan)] = 1
                 }
               }
             }
@@ -1034,24 +991,23 @@ Parser.prototype.popNode = function () {
         if (row === 1) {
           let temp = ''
           for (let i = 1; i < col; i++) {
-            temp += `${width[i] ? width[i] : 'auto'} `
+            temp += (width[i] ? width[i] : 'auto') + ' '
           }
           styleObj['grid-template-columns'] = temp
         }
       }
       node.children = cells
-    }
-    else {
+    } else {
       // 没有使用合并单元格的表格通过 table 布局实现
       if (node.c) {
         styleObj.display = 'table'
       }
       if (!isNaN(spacing)) {
-        styleObj['border-spacing'] = `${spacing}px`
+        styleObj['border-spacing'] = spacing + 'px'
       }
       if (border || padding) {
         // 遍历
-        (function traversal(nodes) {
+        (function traversal (nodes) {
           for (let i = 0; i < nodes.length; i++) {
             const td = nodes[i]
             if (td.name === 'th' || td.name === 'td') {
@@ -1061,8 +1017,7 @@ Parser.prototype.popNode = function () {
               if (padding) {
                 td.attrs.style = `padding:${padding}px;${td.attrs.style || ''}`
               }
-            }
-            else if (td.children) {
+            } else if (td.children) {
               traversal(td.children)
             }
           }
@@ -1074,38 +1029,34 @@ Parser.prototype.popNode = function () {
       const table = Object.assign({}, node)
       node.name = 'div'
       node.attrs = {
-        style: 'overflow:auto',
+        style: 'overflow:auto'
       }
       node.children = [table]
       attrs = table.attrs
     }
-  }
-  else if ((node.name === 'tbody' || node.name === 'tr') && node.flag && node.c) {
+  } else if ((node.name === 'tbody' || node.name === 'tr') && node.flag && node.c) {
     node.flag = undefined;
-    (function traversal(nodes) {
+    (function traversal (nodes) {
       for (let i = 0; i < nodes.length; i++) {
         if (nodes[i].name === 'td') {
           // 颜色样式设置给单元格避免丢失
           for (const style of ['color', 'background', 'background-color']) {
             if (styleObj[style]) {
-              nodes[i].attrs.style = `${style}:${styleObj[style]};${nodes[i].attrs.style || ''}`
+              nodes[i].attrs.style = style + ':' + styleObj[style] + ';' + (nodes[i].attrs.style || '')
             }
           }
-        }
-        else {
+        } else {
           traversal(nodes[i].children || [])
         }
       }
     })(children)
-  }
-  else if ((node.name === 'td' || node.name === 'th') && (attrs.colspan || attrs.rowspan)) {
+  } else if ((node.name === 'td' || node.name === 'th') && (attrs.colspan || attrs.rowspan)) {
     for (let i = this.stack.length; i--;) {
       if (this.stack[i].name === 'table' || this.stack[i].name === 'tbody' || this.stack[i].name === 'tr') {
         this.stack[i].flag = 1 // 指示含有合并单元格
       }
     }
-  }
-  else if (node.name === 'ruby') {
+  } else if (node.name === 'ruby') {
     // 转换 ruby
     node.name = 'span'
     for (let i = 0; i < children.length - 1; i++) {
@@ -1113,22 +1064,21 @@ Parser.prototype.popNode = function () {
         children[i] = {
           name: 'div',
           attrs: {
-            style: 'display:inline-block;text-align:center',
+            style: 'display:inline-block;text-align:center'
           },
           children: [{
             name: 'div',
             attrs: {
-              style: `font-size:50%;${children[i + 1].attrs.style || ''}`,
+              style: 'font-size:50%;' + (children[i + 1].attrs.style || '')
             },
-            children: children[i + 1].children,
-          }, children[i]],
+            children: children[i + 1].children
+          }, children[i]]
         }
         children.splice(i + 1, 1)
       }
     }
-  }
-  else if (node.c) {
-    (function traversal(node) {
+  } else if (node.c) {
+    (function traversal (node) {
       node.c = 2
       for (let i = node.children.length; i--;) {
         const child = node.children[i]
@@ -1157,10 +1107,10 @@ Parser.prototype.popNode = function () {
   const flex = parent && ((parent.attrs.style || '').includes('flex') || (parent.attrs.style || '').includes('grid'))
     // #ifdef MP-WEIXIN
     // 检查基础库版本 virtualHost 是否可用
-    && !(node.c && wx.getNFCAdapter)
+    && !(node.c && wx.getNFCAdapter) // eslint-disable-line
     // #endif
     // #ifndef MP-WEIXIN || MP-QQ || MP-BAIDU || MP-TOUTIAO
-    && !node.c
+    && !node.c // eslint-disable-line
   // #endif
   if (flex) {
     node.f = ';max-width:100%'
@@ -1180,8 +1130,7 @@ Parser.prototype.popNode = function () {
         if (key === 'width') {
           attrs.style += ';width:100%'
         }
-      }
-      else /* #endif */ {
+      } else /* #endif */ {
         attrs.style += val
       }
     }
@@ -1198,7 +1147,7 @@ Parser.prototype.popNode = function () {
 
 /**
  * @description 解析到文本
- * @param {string} text 文本内容
+ * @param {String} text 文本内容
  */
 Parser.prototype.onText = function (text) {
   if (!this.pre) {
@@ -1208,8 +1157,7 @@ Parser.prototype.onText = function (text) {
     for (let i = 0, len = text.length; i < len; i++) {
       if (!blankChar[text[i]]) {
         trim += text[i]
-      }
-      else {
+      } else {
         if (trim[trim.length - 1] !== ' ') {
           trim += ' '
         }
@@ -1220,14 +1168,11 @@ Parser.prototype.onText = function (text) {
     }
     // 去除含有换行符的空串
     if (trim === ' ') {
-      if (flag) {
-        return
-      }
+      if (flag) return
       // #ifdef VUE3
       else {
         const parent = this.stack[this.stack.length - 1]
-        if (parent && parent.name[0] === 't')
-          return
+        if (parent && parent.name[0] === 't') return
       }
       // #endif
     }
@@ -1252,15 +1197,15 @@ Parser.prototype.onText = function (text) {
 
 /**
  * @description html 词法分析器
- * @param {object} handler 高层处理器
+ * @param {Object} handler 高层处理器
  */
-function Lexer(handler) {
+function Lexer (handler) {
   this.handler = handler
 }
 
 /**
  * @description 执行解析
- * @param {string} content 要解析的文本
+ * @param {String} content 要解析的文本
  */
 Lexer.prototype.parse = function (content) {
   this.content = content || ''
@@ -1274,8 +1219,8 @@ Lexer.prototype.parse = function (content) {
 
 /**
  * @description 检查标签是否闭合
- * @param {string} method 如果闭合要进行的操作
- * @returns {boolean} 是否闭合
+ * @param {String} method 如果闭合要进行的操作
+ * @returns {Boolean} 是否闭合
  * @private
  */
 Lexer.prototype.checkClose = function (method) {
@@ -1294,8 +1239,7 @@ Lexer.prototype.checkClose = function (method) {
         this.start = this.i
       }
       this.state = this.endTag
-    }
-    else {
+    } else {
       this.state = this.text
     }
     return true
@@ -1324,8 +1268,7 @@ Lexer.prototype.text = function () {
     }
     this.start = ++this.i
     this.state = this.tagName
-  }
-  else if (c === '/' || c === '!' || c === '?') {
+  } else if (c === '/' || c === '!' || c === '?') {
     if (this.start !== this.i) {
       this.handler.onText(this.content.substring(this.start, this.i))
     }
@@ -1347,8 +1290,7 @@ Lexer.prototype.text = function () {
       this.i += end.length
       this.start = this.i
     }
-  }
-  else {
+  } else {
     this.i++
   }
 }
@@ -1366,8 +1308,7 @@ Lexer.prototype.tagName = function () {
       this.start = this.i
       this.state = this.attrName
     }
-  }
-  else if (!this.checkClose('onTagName')) {
+  } else if (!this.checkClose('onTagName')) {
     this.i++
   }
 }
@@ -1386,8 +1327,7 @@ Lexer.prototype.attrName = function () {
     while (++this.i < len) {
       c = this.content[this.i]
       if (!blankChar[c]) {
-        if (this.checkClose())
-          return
+        if (this.checkClose()) return
         if (needVal) {
           // 等号后遇到第一个非空字符
           this.start = this.i
@@ -1396,16 +1336,14 @@ Lexer.prototype.attrName = function () {
         }
         if (this.content[this.i] === '=') {
           needVal = true
-        }
-        else {
+        } else {
           this.start = this.i
           this.state = this.attrName
           return
         }
       }
     }
-  }
-  else if (!this.checkClose('onAttrName')) {
+  } else if (!this.checkClose('onAttrName')) {
     this.i++
   }
 }
@@ -1417,24 +1355,19 @@ Lexer.prototype.attrName = function () {
 Lexer.prototype.attrVal = function () {
   const c = this.content[this.i]
   const len = this.content.length
-  if (c === '"' || c === '\'') {
+  if (c === '"' || c === "'") {
     // 有冒号的属性
     this.start = ++this.i
     this.i = this.content.indexOf(c, this.i)
-    if (this.i === -1)
-      return
+    if (this.i === -1) return
     this.handler.onAttrVal(this.content.substring(this.start, this.i))
-  }
-  else {
+  } else {
     // 没有冒号的属性
     for (; this.i < len; this.i++) {
       if (blankChar[this.content[this.i]]) {
         this.handler.onAttrVal(this.content.substring(this.start, this.i))
         break
-      }
-      else if (this.checkClose('onAttrVal')) {
-        return
-      }
+      } else if (this.checkClose('onAttrVal')) return
     }
   }
   while (blankChar[this.content[++this.i]]);
@@ -1446,7 +1379,7 @@ Lexer.prototype.attrVal = function () {
 
 /**
  * @description 结束标签状态
- * @returns {string} 结束的标签名
+ * @returns {String} 结束的标签名
  * @private
  */
 Lexer.prototype.endTag = function () {
@@ -1455,13 +1388,11 @@ Lexer.prototype.endTag = function () {
     this.handler.onCloseTag(this.content.substring(this.start, this.i))
     if (c !== '>') {
       this.i = this.content.indexOf('>', this.i)
-      if (this.i === -1)
-        return
+      if (this.i === -1) return
     }
     this.start = ++this.i
     this.state = this.text
-  }
-  else {
+  } else {
     this.i++
   }
 }
