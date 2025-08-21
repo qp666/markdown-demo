@@ -1,7 +1,11 @@
 <template>
   <div :class="wrapClass">
     <div ref="textRef" class="leading-relaxed break-words">
-      <div  class="markdown-body" :class="{ 'markdown-body-generate': loading }" v-html="textVal" />
+      <div
+        class="markdown-body"
+        :class="{ 'markdown-body-generate': loading }"
+        v-html="textVal"
+      />
     </div>
   </div>
 </template>
@@ -33,7 +37,10 @@ const mdi = new MarkdownIt({
     const validLang = !!(language && hljs.getLanguage(language));
     if (validLang) {
       const lang = language ?? "";
-      return highlightBlock(hljs.highlight(code, { language: lang }).value, lang);
+      return highlightBlock(
+        hljs.highlight(code, { language: lang }).value,
+        lang,
+      );
     }
     return highlightBlock(hljs.highlightAuto(code).value, "");
   },
@@ -77,13 +84,17 @@ function highlightBlock(str: string, lang?: string) {
 
 // 处理数学公式括号
 function escapeBrackets(text: string) {
-  const pattern = /(```[\s\S]*?```|`.*?`)|\\\[([\s\S]*?[^\\])\\\]|\\\((.*?)\\\)/g;
-  return text.replace(pattern, (match, codeBlock, squareBracket, roundBracket) => {
-    if (codeBlock) return codeBlock;
-    else if (squareBracket) return `$$${squareBracket}$$`;
-    else if (roundBracket) return `$${roundBracket}$`;
-    return match;
-  });
+  const pattern =
+    /(```[\s\S]*?```|`.*?`)|\\\[([\s\S]*?[^\\])\\\]|\\\((.*?)\\\)/g;
+  return text.replace(
+    pattern,
+    (match, codeBlock, squareBracket, roundBracket) => {
+      if (codeBlock) return codeBlock;
+      else if (squareBracket) return `$$${squareBracket}$$`;
+      else if (roundBracket) return `$${roundBracket}$`;
+      return match;
+    },
+  );
 }
 
 // 处理美元符号和数字
